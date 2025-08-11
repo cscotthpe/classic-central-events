@@ -1,0 +1,141 @@
+Aruba Classic Central / Central On-Prem: Fetch Events (global) to CSV file
+Author: Chris Scott cscott@hpe.com
+Date: 2025-08-08
+
+Overview:
+---------
+This script connects to Aruba Classic Central API to fetch event data within a user-specified
+time window, paginates through results, converts timestamps to human-readable format,
+and exports the data to a CSV file. This uses the Classice Central /monitoring/v2/events endpoint.
+
+Unzip this entire package to the same working directory. The CSV will output to this directory with the format "events-output-DD-MM-YY_HH-MM-SS.csv"
+
+Prerequisites:
+--------------
+- Python 3.x installed
+- Internet connection
+- Aruba Central account with API access and token for Classic Central
+- A YAML file containing your Aruba Central credentials (see below)
+--The YAML file helps make this easy, but the tokens DO expire. This script will attempt to refresh your token if it is possible to do so. If it isn't you can go into Central and create a new one.
+--If a new access token is required, paste it into the prompt of the script and it will update your YAML file for you with the new token.
+--If you lack a YAML file, the script will just prompt you for the required information but you'll need to re-enter it every time you run the script.
+--There is an API method to create new tokens after they expire out of their validity period for being refreshed. That requires using a username/password and is outside the scope of this script.
+
+
+Steps to Run:
+-------------
+
+1. Install Python 3.x
+   ----------------------------------------
+   Windows:
+     - Download from: https://www.python.org/downloads/windows/
+     - During installation, ensure "Add Python to PATH" is checked.
+     - Verify by opening Command Prompt and running:
+       python --version
+
+   macOS:
+     - Install via Homebrew (recommended):
+       brew install python
+     - Or download from: https://www.python.org/downloads/mac-osx/
+     - Verify by opening Terminal and running:
+       python3 --version
+
+   Linux:
+     - Use your distribution package manager, e.g.:
+       Ubuntu/Debian:
+         sudo apt update
+         sudo apt install python3 python3-pip
+       Fedora:
+         sudo dnf install python3 python3-pip
+     - Verify by running:
+       python3 --version
+
+2. Install Required Python Packages
+   ---------------------------------
+   Windows:
+     - Open Command Prompt and run:
+       pip install pycentral pyyaml
+
+   macOS / Linux:
+     - Open Terminal and run:
+       pip3 install pycentral pyyaml
+
+3. Prepare Credentials YAML File
+   -------------------------------
+   - Create a YAML file named exactly `input_token_only.yaml` in the same folder where your Python script resides.
+
+   - The script expects this file at runtime to load your Aruba Central API credentials.
+
+   - The YAML file should include your Aruba Central details as follows, copy and paste this *exactly*:
+
+     central_info:
+       base_url: YOUR_CENTRAL_API_GATEWAY_BASE_URL_HERE
+       token:
+         access_token: YOUR_ACCESS_TOKEN_HERE
+         refresh_token: YOUR_REFRESH_TOKEN_HERE
+       client_id: YOUR_CLIENT_ID_HERE
+       client_secret: YOUR_CLIENT_SECRET_HERE
+     ssl_verify: true
+
+   - Replace placeholders (`YOUR_ACCESS_TOKEN_HERE`, etc.) with your actual credentials.
+   - Your refresh token and client id & secret are required if you want to automatically attempt to refresh your token.
+   - There is an OAuth 2.0 method but requires username and password credentials. It is not in-scope for this script.
+   
+   - You need to know the CENTRAL API GATEWAY BASE URL for your Central account, found here if you are using Central in the cloud:
+   https://arubanetworking.hpe.com/techdocs/central/latest/content/nms/api/domain_url.htm
+
+   **For Central On-Prem or if you are still unsure, look in Organization > Platform Integration > REST API
+   --On the API>Documentation tab, your API GATEWAY BASE URL is the URL listed here *without* /swagger/apps/nms
+
+   - If the file is missing or incomplete, the script will prompt you to enter the required information interactively and save it back to this YAML file.
+
+4. Run the Script
+   ----------------
+   Windows:
+     - Open Command Prompt.
+     - Navigate to the folder containing the script and YAML file:
+       cd C:\Path\To\Your\ScriptFolder
+     - Run:
+       python your_script_name.py
+
+   macOS / Linux:
+     - Open Terminal.
+     - Navigate to your script folder containing the script and YAML file:
+       cd /path/to/your/scriptfolder
+     - Run:
+       python3 your_script_name.py
+
+5. Follow On-Screen Prompts
+   --------------------------
+   - Choose the event time range.
+   - If your access token has expired or credentials are missing, the script will prompt you to provide updated values.
+   - These values will be saved to `input_token_only.yaml` for future runs.
+
+6. View Output
+   -------------
+   - The script will create a CSV file with event data in the script folder.
+   - Progress and debug info will display in the terminal or command prompt.
+
+Optional: Using a Virtual Environment (Recommended)
+----------------------------------------------------
+Windows:
+  python -m venv centralenv
+  .\centralenv\Scripts\activate
+  pip install pycentral pyyaml
+  python your_script_name.py
+
+macOS / Linux:
+  python3 -m venv centralenv
+  source centralenv/bin/activate
+  pip install pycentral pyyaml
+  python3 your_script_name.py
+
+Troubleshooting:
+----------------
+- Ensure Python and pip are installed and on your system PATH.
+- Confirm internet connectivity to Aruba Central API.
+- Verify the presence and correctness of `input_token_only.yaml` in the script folder.
+- If permission denied errors occur on Mac/Linux, try adding `sudo` for installs.
+
+
+License: You're free to use this as you see fit. Contact if you have questions.

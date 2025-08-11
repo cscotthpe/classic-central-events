@@ -1,0 +1,8 @@
+central_info:
+  base_url: YOUR_CENTRAL_API_GATEWAY_BASE_URL_HERE
+  token:
+    access_token: YOUR_ACCESS_TOKEN_HERE
+    refresh_token: YOUR_REFRESH_TOKEN_HERE
+  client_id: YOUR_CLIENT_ID_HERE
+  client_secret: YOUR_CLIENT_SECRET_HERE
+  ssl_verify: true
